@@ -1,5 +1,3 @@
-#pragma once
-
 #include "MCParams.h"
 #include <string>
 

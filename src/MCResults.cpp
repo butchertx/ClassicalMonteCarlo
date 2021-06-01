@@ -1,5 +1,9 @@
 #include "MCResults.h"
-#include <direct.h>
+#include <sys/stat.h> // stat
+#include <errno.h>    // errno, ENOENT, EEXIST
+#if defined(_WIN32)
+#include <direct.h>   // _mkdir
+#endif
 
 bool isDirExist(const std::string& path)
 {
