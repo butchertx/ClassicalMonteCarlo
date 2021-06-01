@@ -1,0 +1,55 @@
+{
+  "lattice": {
+    "type": "XY",
+    "L": [ 6, 6, 20 ],
+    "dimension": 3,
+    "pbc_type": "open"
+  },
+  "model": {
+    "interaction_type": "local",
+    "interactions": [
+      {
+        "name": "J0",
+        "distance": 1,
+        "strength": -1.0
+      },
+      {
+        "name": "Jz1",
+        "distance": 1,
+        "strength": -0.1
+      },
+      {
+        "name": "Jz2",
+        "distance": 2,
+        "strength": 0.5
+      }
+    ],
+    "beta": 1.0
+  },
+  "parallel": {
+    "parallel_entries": [
+      {
+        "name": "beta",
+        "values": [ 0.2, 0.3, 0.4, 0.5, 0.6 ],
+        "MPI": false
+      },
+      {
+        "name": "Jz1",
+        "values": [ 0.5 ],
+        "MPI": false
+      }
+    ]
+  },
+  "markov": {
+    "seed": -1,
+    "metropolis_steps": 100,
+    "overrelaxation_steps": 1,
+    "cluster_steps": 0,
+    "measures": 10000,
+    "throwaway": 1000,
+    "measures_per_ptemp": 10000
+  },
+  "observables": [ "m2" ],
+  "observable_functions": [ "corr" ],
+  "outputs": [ "average" ]
+}

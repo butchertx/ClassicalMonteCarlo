@@ -1,0 +1,15 @@
+*.ipch
+*.suo
+*.db
+*.db-shm
+*.db-wal
+*.opendb
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+
+results/*
+older/*
+x64/*
+*.tar.gz
