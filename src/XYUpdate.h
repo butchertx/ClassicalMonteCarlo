@@ -80,9 +80,9 @@ public:
 		spin2 mean_field = spin2(0.0, 0.0);
 		spin2 neigh, seed;
 		double s_dot_mf;
-
+		int site0 = random->get_rand_site();
 		//iterate over sites
-		for (int site0 = 0; site0 < lattice->size(); ++site0) {
+		//for (int site0 = 0; site0 < lattice->size(); ++site0) {
 
 			seed = lattice->get(site0);
 			mean_field = spin2(0.0, 0.0);
@@ -97,7 +97,7 @@ public:
 			mean_field.normalize();
 			s_dot_mf = mean_field.dot(seed);
 			lattice->set(site0, spin2(seed.sx - 2.0 * s_dot_mf * mean_field.sx, seed.sy - 2.0 * s_dot_mf * mean_field.sy));
-		}
+		//}
 	}
 
 	void local_cluster_step(XYLattice3D* lattice) {

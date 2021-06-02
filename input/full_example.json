@@ -30,7 +30,7 @@
     "parallel_entries": [
       {
         "name": "beta",
-        "values": [ 0.2, 0.3, 0.4, 0.5, 0.6 ],
+        "values": [ 10 ],
         "MPI": false
       },
       {
@@ -43,7 +43,7 @@
   "markov": {
     "seed": -1,
     "metropolis_steps": 100,
-    "overrelaxation_steps": 1,
+    "overrelaxation_steps": 10,
     "cluster_steps": 0,
     "measures": 10000,
     "throwaway": 1000,
