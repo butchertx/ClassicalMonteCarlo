@@ -1,7 +1,7 @@
 {
   "lattice": {
     "type": "XY",
-    "L": [ 6, 6, 20 ],
+    "L": [ 6, 6, 6 ],
     "dimension": 3,
     "pbc_type": "open"
   },
@@ -21,7 +21,7 @@
       {
         "name": "Jz2",
         "distance": 2,
-        "strength": 0.5
+        "strength": 0.0
       }
     ],
     "beta": 1.0
@@ -42,14 +42,14 @@
   },
   "markov": {
     "seed": -1,
-    "metropolis_steps": 100,
+    "metropolis_steps": 200,
     "overrelaxation_steps": 10,
     "cluster_steps": 0,
     "measures": 10000,
     "throwaway": 1000,
     "measures_per_ptemp": 10000
   },
-  "observables": [ "m2" ],
+  "observables": [ "mq" ],
   "observable_functions": [ "corr" ],
   "outputs": [ "average" ]
 }

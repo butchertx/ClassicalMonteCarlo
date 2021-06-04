@@ -8,6 +8,10 @@
 #include "MCState.h"
 #include "XYUpdate.h"
 #include <typeinfo>
+#include <vector>
+#ifndef _USE_MATH_DEFINES
+	#define _USE_MATH_DEFINES
+#endif
 
 
 class MCRun {
@@ -20,10 +24,17 @@ class MCRun {
 	MCParams params;
 	XYLattice3D* lattice;
 
+	std::vector<double> Q = { 0.0, 0.0, 0.5 * TAU };
+
 public:
 
 	MCRun(RandomEngine* rand_, MCParams params_, XYLattice3D* lattice_): rand_p(rand_), params(params_), lattice(lattice_) {
-
+		if (params.model.interactions[1].strength > 0) {
+			Q = { 0.0, 0.0, 0.5 * TAU };
+		}
+		else {
+			Q = { 0.0, 0.0, 0.0 };
+		}
 	}
 
 	void run() {
@@ -58,6 +69,12 @@ public:
 
 	void reset_params(MCParams params_) {
 		params = params_;
+		if (params.model.interactions[1].strength > 0) {
+			Q = { 0.0, 0.0, 0.5 * TAU };
+		}
+		else {
+			Q = { 0.0, 0.0 };
+		}
 	}
 
 	void reset_results() {
@@ -77,6 +94,9 @@ public:
 	double calc_observable(std::string obs_name) {
 		if (obs_name.compare("m2") == 0) {
 			return lattice->calc_mag2();
+		}
+		else if (obs_name.compare("mq") == 0) {
+			return lattice->calc_chi_q(Q);
 		}
 		else {
 			std::cout << obs_name << " not supported as observable\n";

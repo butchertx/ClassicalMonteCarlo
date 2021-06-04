@@ -132,7 +132,7 @@ int main(int argc, char* argv[]) {
             lattice.randomize(&random);
             runner.run();
 
-            std::vector<double> mag2 = runner.get_results().get("m2");
+            std::vector<double> mag2 = runner.get_results().get("mq");
             std::vector<double> corr = runner.get_results().get_function_average("corr");
             mag2_results[j].push_back(0.0);
             for (int i = 0; i < mag2.size(); ++i) {

@@ -207,6 +207,21 @@ public:
 		return ((double)result.sx * result.sx + result.sy * result.sy) / ((double) N * N);
 	}
 
+	double calc_chi_q(std::vector<double> Q) {
+		assert(Q.size() == 3);
+		spin2 result_r(0.0, 0.0), result_i(0.0, 0.0);
+		double phi = 0;
+		for (int i = 0; i < spins.size(); ++i) {
+			//this is so hacky and bad and slow
+			phi = roll_index(i)[0] * Q[0] + roll_index(i)[1] * Q[1] + roll_index(i)[2] * Q[2];
+			result_r.sx += spins[i].sx * cos(phi);
+			result_r.sy += spins[i].sy * cos(phi);
+			result_i.sx += spins[i].sx * sin(phi);
+			result_i.sy += spins[i].sy * sin(phi);
+		}
+		return ((double)result_r.sx * result_r.sx + result_r.sy*result_r.sy + result_i.sx*result_i.sx + result_i.sy*result_i.sy) / ((double)N * N);
+	}
+
 	std::vector<double> calc_correlation() {
 		std::vector<double> sx(N, 0.0), sy(N, 0.0);
 		get_std_vector(sx, sy);

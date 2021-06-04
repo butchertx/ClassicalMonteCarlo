@@ -3,7 +3,7 @@
 #include <vector>
 #include <sstream>
 #include <unordered_map>
-#include <assert.h>
+
 
 template <class T>
 std::string vec2str(std::vector<T> vec) {
@@ -29,6 +29,7 @@ class MCResults {
 
 	bool keep_functions = false;
 	int function_bin_size = 100;
+	int measure_bin_size = 100;
 
 public:
 
@@ -53,58 +54,16 @@ public:
 
 	}
 
-	void record(std::string obs, double measurement) {
-		measurements[obs].push_back(measurement);
-	}
+	void record(std::string obs, double measurement);
 
-	void record(std::string obs, std::vector<double> measurement) {
-		function_measurements[obs].push_back(measurement);
+	void record(std::string obs, std::vector<double> measurement);
 
-		if (!keep_functions && 
-			function_measurements[obs].size() == function_bin_size) {
-			bin_function(obs);
-			function_measurements[obs].clear();
-		}
-	}
+	void bin_function(std::string obs);
 
-	void bin_function(std::string obs) {
-		assert(function_measurements[obs].size() == function_bin_size);
+	std::vector<double> get(std::string obs);
 
-		//get measurements and create zero function to accumulate into
-		std::vector<std::vector<double>> measures = function_measurements[obs];
-		std::vector<double> cumul(measures[0].size(), 0.0);
+	std::vector<double> get_function_average(std::string obs);
 
-		for (int meas = 0; meas < measures.size(); ++meas) {
-			for (int i = 0; i < measures[meas].size(); ++i) {
-				cumul[i] += measures[meas][i] / (1.0*function_bin_size);
-			}
-		}
-
-		function_bins[obs].push_back(cumul);
-		function_counts[obs].push_back(function_bin_size);
-	}
-
-	std::vector<double> get(std::string obs) {
-		return measurements[obs];
-	}
-
-	std::vector<double> get_function_average(std::string obs) {
-		std::vector<std::vector<double>> results;
-		if (keep_functions) {
-			results = function_measurements[obs];
-		}
-		else {
-			results = function_bins[obs];
-		}
-		std::vector<double> function_avg(results[0].size(), 0.0);
-		for (int m = 0; m < results.size(); ++m) {
-			for (int i = 0; i < function_avg.size(); ++i) {
-				function_avg[i] += results[m][i] / results.size();
-			}
-		}
-		return function_avg;
-	}
-
-
+	std::vector<double> autocorrelation(std::vector<double> measurements);
 
 };
