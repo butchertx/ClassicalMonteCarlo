@@ -13,22 +13,15 @@ Run a classical Monte Carlo simulation for n-rotor models with arbitrary interac
 #include <chrono>
 //#include <mpi.h>
 
-#include "MCParams.h"
+//#include "MCParams.h"
+#include "cmctype.h"
+#include "Lattice.h"
 #include "MCState.h"
 #include "RandomEngine.h"
 #include "MCRun.h"
 #include "MCResults.h"
 
 void check_gpu();
-
-
-XYLattice3D create_rotor_lattice(LatticeParams params) {
-    if (params.type.compare("XY") == 0) {
-        if (params.D == 3) {
-            return XYLattice3D(params.L);
-        }
-    }
-}
 
 
 int main(int argc, char* argv[]) {
@@ -102,9 +95,9 @@ int main(int argc, char* argv[]) {
     //
     //  Read and set up params for each process
     //
-    MCParams params;
+    cmctype::MCParams params;
     std::string infile(argv[1]);
-    params = read_params(infile);
+    params = cmctype::read_params(infile);
     params.set_parallel_params(id);
     params.print();
     std::vector<double> Jz1, beta;
@@ -117,9 +110,12 @@ int main(int argc, char* argv[]) {
     //  
     MemTimeTester timer;
     timer.flag_start_time("full simulation");
-    XYLattice3D lattice = create_rotor_lattice(params.lattice);
-    RandomEngine random = RandomEngine(params.markov.seed, lattice.size(), 1);
-    MCRun runner = MCRun(&random, params, &lattice);
+    Lattice lattice(Lattice_type_from_string(params.lattice.latticetype), params.lattice.L, vec3<int>(1, 1, 1));
+    RandomEngine random = RandomEngine(params.markov.seed, lattice.get_N(), 1);
+    assert(params.lattice.spintype.compare("XY") == 0);
+    XYLattice state(lattice);
+    Model_ANNNXY model(lattice, params.model);
+    MCRun<spin2> runner(&random, params, &state, &model);
 
     for (int j = 0; j < Jz1.size(); ++j) {
         params.model.interactions[1].strength = Jz1[j];
@@ -129,10 +125,10 @@ int main(int argc, char* argv[]) {
             params.model.T = 1 / beta[b];
             runner.reset_params(params);
             runner.reset_results();
-            lattice.randomize(&random);
+            state.randomize(&random);
             runner.run();
 
-            std::vector<double> mag2 = runner.get_results().get("mq");
+            std::vector<double> mag2 = runner.get_results().get("m2");
             std::vector<double> corr = runner.get_results().get_function_average("corr");
             mag2_results[j].push_back(0.0);
             for (int i = 0; i < mag2.size(); ++i) {

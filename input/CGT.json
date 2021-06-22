@@ -1,0 +1,65 @@
+{
+  "lattice": {
+    "spintype": "XYZ",
+    "latticetype": "CGT",
+    "L": [ 6, 6, 6 ],
+    "dimension": 3,
+    "pbc_type": "pbc"
+  },
+  "model": {
+    "model_name":  "CGT",
+    "interactions": [
+      {
+        "name": "J1",
+        "strength": -2.71
+      },
+      {
+        "name": "J2",
+        "strength": 0.058
+      },
+      {
+        "name": "J3",
+        "strength": -0.115
+      },
+      {
+        "name": "Jz1",
+        "strength": 0.036
+      },
+      {
+        "name": "Jz2",
+        "strength": -0.086
+      },
+      {
+        "name": "Jz3",
+        "strength": -0.27
+      }
+    ],
+    "beta": 0.17577
+  },
+  "parallel": {
+    "parallel_entries": [
+      {
+        "name": "beta",
+        "values": [ 10 ],
+        "MPI": false
+      },
+      {
+        "name": "Jz1",
+        "values": [ 0.5 ],
+        "MPI": false
+      }
+    ]
+  },
+  "markov": {
+    "seed": -1,
+    "metropolis_steps": 200,
+    "overrelaxation_steps": 10,
+    "cluster_steps": 0,
+    "measures": 10000,
+    "throwaway": 1000,
+    "measures_per_ptemp": 10000
+  },
+  "observables": [ "mq" ],
+  "observable_functions": [ "corr" ],
+  "outputs": [ "average" ]
+}

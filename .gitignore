@@ -13,3 +13,5 @@ results/*
 older/*
 x64/*
 *.tar.gz
+
+./*.csv

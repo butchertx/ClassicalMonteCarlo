@@ -1,0 +1,52 @@
+{
+  "lattice": {
+    "spintype": "XY",
+    "latticetype": "cubic",
+    "L": [ 6, 6, 6 ],
+    "pbc_type": "pbc"
+  },
+  "model": {
+    "model_name":  "ANNNXY",
+    "interactions": [
+      {
+        "name": "J0",
+        "strength": -1.0
+      },
+      {
+        "name": "Jz1",
+        "strength": -1.0
+      },
+      {
+        "name": "Jz2",
+        "strength": 0.0
+      }
+    ],
+    "beta": 2.0
+  },
+  "parallel": {
+    "parallel_entries": [
+      {
+        "name": "beta",
+        "values": [ 2.0 ],
+        "MPI": false
+      },
+      {
+        "name": "Jz1",
+        "values": [ -1.0 ],
+        "MPI": false
+      }
+    ]
+  },
+  "markov": {
+    "seed": -1,
+    "metropolis_steps": 100,
+    "overrelaxation_steps": 0,
+    "cluster_steps": 0,
+    "measures": 10000,
+    "throwaway": 1000,
+    "measures_per_ptemp": 10000
+  },
+  "observables": [ "m2", "mq" ],
+  "observable_functions": [ "corr" ],
+  "outputs": [ "average" ]
+}
