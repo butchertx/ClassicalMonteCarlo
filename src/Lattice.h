@@ -357,6 +357,14 @@ public:
 			<< "<" << out.z.x << "," << out.z.y << "," << out.z.z << ">\n\n";
 	}
 
+	vec3<vec3<double>> get_lattice_vectors() {
+		return a;
+	}
+
+	std::vector<vec3<double>> get_basis() {
+		return basis;
+	}
+
 	void print_distances() {
 		std::cout << "Distances:\n";
 		for (int i = 0; i < distances.size(); ++i) {
@@ -396,6 +404,18 @@ public:
 			}
 		}
 		assert(std::abs(result) != origin);
+		return result;
+	}
+
+	bool check_shift(int origin, vec3<double> shift) {
+		// check the shift from origin to see if there is a site there
+		bool result = false;
+		double dist = sqrt(shift * shift) - EPSILON;
+		int dist_ind = std::lower_bound(distances.begin(), distances.end(), dist) - distances.begin();
+		std::vector<int> neighbor_list = get_neighbors(origin, dist_ind);
+		for (auto label = neighbor_list.begin(); label != neighbor_list.end(); ++label) {
+			result = result || check_shift(origin, *label, shift);
+		}
 		return result;
 	}
 

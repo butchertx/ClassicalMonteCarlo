@@ -3,7 +3,6 @@
     "spintype": "XYZ",
     "latticetype": "CGT",
     "L": [ 6, 6, 6 ],
-    "dimension": 3,
     "pbc_type": "pbc"
   },
   "model": {
@@ -40,12 +39,7 @@
     "parallel_entries": [
       {
         "name": "beta",
-        "values": [ 10 ],
-        "MPI": false
-      },
-      {
-        "name": "Jz1",
-        "values": [ 0.5 ],
+        "values": [ 0.17577 ],
         "MPI": false
       }
     ]
@@ -53,13 +47,13 @@
   "markov": {
     "seed": -1,
     "metropolis_steps": 200,
-    "overrelaxation_steps": 10,
+    "overrelaxation_steps": 0,
     "cluster_steps": 0,
     "measures": 10000,
     "throwaway": 1000,
     "measures_per_ptemp": 10000
   },
-  "observables": [ "mq" ],
+  "observables": [ "m2" ],
   "observable_functions": [ "corr" ],
   "outputs": [ "average" ]
 }

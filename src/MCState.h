@@ -252,9 +252,74 @@ public:
 
 };
 
-class XYZLattice {
+class XYZLattice : public NRotorLattice<spin3> {
 	//n = 3 rotor lattice in arbitrary dimension
-	int dim;
-	std::vector<int> L;
-	std::vector<spin3> spins;
+
+	void get_std_vector(std::vector<std::vector<double>>& spin_component_vectors) {
+		assert(spin_component_vectors.size() == 3);
+		if (spin_component_vectors[0].size() != N || spin_component_vectors[1].size() != N || spin_component_vectors[2].size() != N) {
+			spin_component_vectors[0].resize(N);
+			spin_component_vectors[1].resize(N);
+			spin_component_vectors[2].resize(N);
+		}
+		for (int i = 0; i < N; ++i) {
+			spin_component_vectors[0][i] = spins[i].s.x;
+			spin_component_vectors[1][i] = spins[i].s.y;
+			spin_component_vectors[2][i] = spins[i].s.z;
+		}
+	}
+
+public:
+
+	XYZLattice(Lattice& lattice_) : NRotorLattice<spin3>(lattice_) {};
+
+	void randomize(RandomEngine* rand_p) {
+		double angle;
+		spin3 R;
+		for (int site = 0; site < spins.size(); ++site) {
+			double phi = rand_p->get_rand_prob() * TAU;
+			double theta = rand_p->get_rand_prob() * 0.5 * TAU;
+			R = spin3(cos(phi) * sin(theta), sin(phi) * sin(theta), cos(theta));
+			R.site = site;
+			spins[site] = R;
+		}
+	}
+
+	double calc_mag2() {
+		vec3<double> result(0.0, 0.0, 0.0);
+		for (int i = 0; i < spins.size(); ++i) {
+			result.x += spins[i].s.x;
+			result.y += spins[i].s.y;
+			result.z += spins[i].s.z;
+		}
+		return (result * result) / ((double)N * N);
+	}
+
+	double calc_chi_q(vec3<double> Q) {
+		vec3<std::complex<double>> result({ 0.0, 0.0 }, { 0.0, 0.0 }, { 0.0, 0.0 });
+		double phi = 0;
+		for (int i = 0; i < spins.size(); ++i) {
+			phi = lattice.get_coordinate(i) * Q;
+			result.x += spins[i].s.x * std::complex<double>(cos(phi), sin(phi));
+			result.y += spins[i].s.y * std::complex<double>(cos(phi), sin(phi));
+			result.z += spins[i].s.z * std::complex<double>(cos(phi), sin(phi));
+		}
+		return (std::abs(result.x) * std::abs(result.x) + std::abs(result.y) * std::abs(result.y) + std::abs(result.z) * std::abs(result.z)) / ((double)N * N);
+	}
+
+	std::vector<double> calc_correlation() {
+		std::vector<std::vector<double>> sxyz = { std::vector<double>(N, 0.0), std::vector<double>(N, 0.0), std::vector<double>(N, 0.0) };
+		get_std_vector(sxyz);
+
+		std::vector<double> corr_sx = calc_correlation_no_wisdom(sxyz[0], L.x, L.y, L.z);
+		std::vector<double> corr_sy = calc_correlation_no_wisdom(sxyz[1], L.x, L.y, L.z);
+		std::vector<double> corr_sz = calc_correlation_no_wisdom(sxyz[2], L.x, L.y, L.z);
+
+		std::vector<double> result(N, 0.0);
+		for (int i = 0; i < N; ++i) {
+			result[i] += (corr_sx[i] + corr_sy[i] + corr_sz[i]) / N;
+		}
+		return result;
+	}
+
 };
