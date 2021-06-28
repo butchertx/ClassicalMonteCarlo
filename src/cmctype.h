@@ -193,7 +193,7 @@ namespace cmctype {
 			return vec3(this->x * a, this->y * a, this->z * a);
 		}
 
-		double operator* (const vec2<T>& v) const {
+		double operator* (const vec3<T>& v) const {
 			return this->x * v.x + this->y * v.y + this->z * v.z;
 		}
 

@@ -20,6 +20,7 @@ Run a classical Monte Carlo simulation for n-rotor models with arbitrary interac
 #include "RandomEngine.h"
 #include "MCRun.h"
 #include "MCResults.h"
+#include "Update.h"
 
 void check_gpu();
 
@@ -115,7 +116,8 @@ int main(int argc, char* argv[]) {
     assert(params.lattice.spintype.compare("XY") == 0);
     XYLattice state(lattice);
     Model_ANNNXY model(lattice, params.model);
-    MCRun<spin2> runner(&random, params, &state, &model);
+    XYUpdate updater(&random, &model);
+    MCRun<spin2> runner(&random, params, &state, &model, &updater);
 
     for (int j = 0; j < Jz1.size(); ++j) {
         params.model.interactions[1].strength = Jz1[j];

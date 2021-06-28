@@ -18,6 +18,8 @@ Run a classical Monte Carlo simulation for n-rotor models with arbitrary interac
 #include "RandomEngine.h"
 #include "MCRun.h"
 #include "MCResults.h"
+#include "Update.h"
+#include "Model.h"
 
 
 int main(int argc, char* argv[]) {
@@ -44,7 +46,7 @@ int main(int argc, char* argv[]) {
     //
     //  Start random number generators and set up lattice/state variables
     //
-    
+
     MemTimeTester timer;
     timer.flag_start_time("full simulation");
     Lattice lattice(Lattice_type_from_string(params.lattice.latticetype), params.lattice.L, vec3<int>(1, 1, 1));
@@ -52,52 +54,45 @@ int main(int argc, char* argv[]) {
     assert(params.lattice.spintype.compare("XYZ") == 0);
     XYZLattice state(lattice);
     Model_CGT model(lattice, params.model);
-    //MCRun<spin3> runner(&random, params, &state, &model);
+    
+    XYZUpdate updater(&random, &model);
+    MCRun<spin3> runner(&random, params, &state, &model, &updater);
 
-    /*
+    mag2_results.push_back({});
+    for (int b = 0; b < beta.size(); ++b) {
+        params.model.beta = beta[b];
+        params.model.T = 1 / beta[b];
+        //runner.reset_params(params);
+        model.set_interactions(lattice, params.model);
+        runner.reset_results();
+        state.randomize(&random);
+        runner.run();
 
-    for (int j = 0; j < Jz1.size(); ++j) {
-        params.model.interactions[1].strength = Jz1[j];
-        mag2_results.push_back({});
-        for (int b = 0; b < beta.size(); ++b) {
-            params.model.beta = beta[b];
-            params.model.T = 1 / beta[b];
-            runner.reset_params(params);
-            runner.reset_results();
-            state.randomize(&random);
-            runner.run();
-
-            std::vector<double> mag2 = runner.get_results().get("m2");
-            std::vector<double> corr = runner.get_results().get_function_average("corr");
-            mag2_results[j].push_back(0.0);
-            for (int i = 0; i < mag2.size(); ++i) {
-                mag2_results[j][b] += mag2[i] / mag2.size();
-            }
-
-            std::ofstream file;
-            std::stringstream filename;
-            filename << "corr_j" << j << "_beta" << b << ".csv";
-            file.open(filename.str());
-            file << vec2str(corr);
+        std::vector<double> mag2 = runner.get_results().get("m2");
+        std::vector<double> corr = runner.get_results().get_function_average("corr");
+        mag2_results[0].push_back(0.0);
+        for (int i = 0; i < mag2.size(); ++i) {
+            mag2_results[0][b] += mag2[i] / mag2.size();
         }
+
+        std::ofstream file;
+        std::stringstream filename;
+        filename << "corr_beta" << b << ".csv";
+        file.open(filename.str());
+        file << vec2str(corr);
     }
 
     std::ofstream file;
     file.open("mag2.csv");
-    file << "beta\\Jz1," << vec2str(Jz1) << "\n";
+    file << "beta, m^2\n";
     for (int b = 0; b < beta.size(); ++b) {
         file << beta[b] << ",";
-        for (int j = 0; j < Jz1.size() - 1; ++j) {
-            file << mag2_results[j][b] << ",";
-        }
-        file << mag2_results[Jz1.size() - 1][b] << "\n";
+        file << mag2_results[0][b] << "\n";
     }
 
 
     timer.flag_end_time("full simulation");
     timer.print_timers();
-
-    */
 
     return 0;
 }

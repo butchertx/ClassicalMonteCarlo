@@ -118,8 +118,16 @@ public:
 		}
 	}
 
+	double dot(cmctype::vec3<double> v_) {
+		return s * v_;
+	}
+
 	spin3 operator+(const spin3& s_) const {
 		return spin3(s_.s + this->s, this->site);
+	}
+
+	spin3 operator-(const spin3& s_) const {
+		return spin3(this->s - s_.s, this->site);
 	}
 
 	spin3 operator*(const double& c) const {
@@ -311,9 +319,9 @@ public:
 		std::vector<std::vector<double>> sxyz = { std::vector<double>(N, 0.0), std::vector<double>(N, 0.0), std::vector<double>(N, 0.0) };
 		get_std_vector(sxyz);
 
-		std::vector<double> corr_sx = calc_correlation_no_wisdom(sxyz[0], L.x, L.y, L.z);
-		std::vector<double> corr_sy = calc_correlation_no_wisdom(sxyz[1], L.x, L.y, L.z);
-		std::vector<double> corr_sz = calc_correlation_no_wisdom(sxyz[2], L.x, L.y, L.z);
+		std::vector<double> corr_sx = calc_correlation_no_wisdom(sxyz[0], L.x, L.y, lattice.get_num_base() * L.z);
+		std::vector<double> corr_sy = calc_correlation_no_wisdom(sxyz[1], L.x, L.y, lattice.get_num_base() * L.z);
+		std::vector<double> corr_sz = calc_correlation_no_wisdom(sxyz[2], L.x, L.y, lattice.get_num_base() * L.z);
 
 		std::vector<double> result(N, 0.0);
 		for (int i = 0; i < N; ++i) {

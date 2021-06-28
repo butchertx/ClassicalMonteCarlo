@@ -24,24 +24,23 @@ class MCRun {
 	cmctype::MCParams params;
 	NRotorLattice<spintype>* state;
 	Model* model;
+	MCUpdate<spintype>* updater;
 
 public:
 
-	MCRun(RandomEngine* rand_, cmctype::MCParams params_, NRotorLattice<spintype>* state_, Model* model_) : rand_p(rand_), params(params_), state(state_), model(model_) {};
+	MCRun(RandomEngine* rand_, cmctype::MCParams params_, NRotorLattice<spintype>* state_, Model* model_, MCUpdate<spintype>* updater_) : rand_p(rand_), params(params_), state(state_), model(model_), updater(updater_){};
 
 	void run() {
 
-		XYUpdate updater(rand_p, model);
-
 		for (int m = 0; m < params.markov.measures + params.markov.throwaway; ++m) {
 			for (int i = 0; i < params.markov.overrelaxation_steps; ++i) {
-				updater.overrelaxation_step(state);
+				updater->overrelaxation_step(state);
 			}
 			for (int i = 0; i < params.markov.metropolis_steps; ++i) {
-				updater.metropolis_step(state);
+				updater->metropolis_step(state);
 			}
 			for (int i = 0; i < params.markov.cluster_steps; ++i) {
-				updater.local_cluster_step(state);
+				updater->local_cluster_step(state);
 			}
 			if (m > params.markov.throwaway) {
 				measure();
@@ -100,4 +99,3 @@ public:
 	}
 
 };
-

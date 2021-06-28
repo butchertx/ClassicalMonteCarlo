@@ -33,22 +33,22 @@
         "strength": -0.27
       }
     ],
-    "beta": 0.17577
+    "beta": 1.0
   },
   "parallel": {
     "parallel_entries": [
       {
         "name": "beta",
-        "values": [ 0.17577 ],
+        "values": [ 0.1, 0.2, 0.3, 0.4, 0.5 ],
         "MPI": false
       }
     ]
   },
   "markov": {
     "seed": -1,
-    "metropolis_steps": 200,
-    "overrelaxation_steps": 0,
-    "cluster_steps": 0,
+    "metropolis_steps": 500,
+    "overrelaxation_steps": 10,
+    "cluster_steps": 1,
     "measures": 10000,
     "throwaway": 1000,
     "measures_per_ptemp": 10000
