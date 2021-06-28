@@ -9,7 +9,16 @@
 *.vcxproj.filters
 *.vcxproj.user
 
+# Windows folders/files
 results/*
 older/*
 x64/*
 *.tar.gz
+
+# Unix folders/files
+*.sh
+*.exe
+*.x
+*.slurm
+run/*
+*.o
