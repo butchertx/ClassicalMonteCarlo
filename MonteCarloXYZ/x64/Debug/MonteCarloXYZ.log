@@ -9,11 +9,11 @@ C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(185,1): warning 
           [
               _Ty=int
           ]
-C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(380,16): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
-C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(399,16): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
-C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(414,16): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
-C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(442,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(447,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(402,16): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(421,16): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(436,16): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(464,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(469,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
 C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\RandomEngine.h(28,68): warning C4244: '=': conversion from '_Rep' to 'unsigned int', possible loss of data
           with
           [

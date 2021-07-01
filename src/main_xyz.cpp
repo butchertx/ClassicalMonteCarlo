@@ -49,7 +49,22 @@ int main(int argc, char* argv[]) {
 
     MemTimeTester timer;
     timer.flag_start_time("full simulation");
+
     Lattice lattice(Lattice_type_from_string(params.lattice.latticetype), params.lattice.L, vec3<int>(1, 1, 1));
+    std::ofstream file;
+    std::string lattice_file = "dump/lattice.csv";
+    file.open(lattice_file);
+    lattice.write_coordinates(&file);
+    file.close();
+    lattice_file = "dump/lattice_periodic.csv";
+    file.open(lattice_file);
+    lattice.write_periodic_translations(&file);
+    file.close();
+    std::string neighbor_file = "dump/neighbors.csv";
+    file.open(neighbor_file);
+    lattice.print_neighbors_csv(&file);
+    file.close();
+
     RandomEngine random = RandomEngine(params.markov.seed, lattice.get_N(), 1);
     assert(params.lattice.spintype.compare("XYZ") == 0);
     XYZLattice state(lattice);
@@ -80,15 +95,17 @@ int main(int argc, char* argv[]) {
         filename << "corr_beta" << b << ".csv";
         file.open(filename.str());
         file << vec2str(corr);
+        file.close();
     }
 
-    std::ofstream file;
+    
     file.open("mag2.csv");
     file << "beta, m^2\n";
     for (int b = 0; b < beta.size(); ++b) {
         file << beta[b] << ",";
         file << mag2_results[0][b] << "\n";
     }
+    file.close();
 
 
     timer.flag_end_time("full simulation");

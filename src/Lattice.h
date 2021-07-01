@@ -273,6 +273,20 @@ public:
 		}
 	}
 
+	void print_neighbors_csv(std::ofstream* f) {
+		*f << "distance, i, neighbors\n";
+		std::stringstream ss;
+		for (int neighbor = 0; neighbor < neighbors[0].size(); ++neighbor) {
+			for (int i = 0; i < N; ++i) {
+				*f << neighbor + 1 << "," << i << ",";
+				for (int j = 0; j < neighbors[i][neighbor].size(); ++j) {
+					*f << neighbors[i][neighbor][j] * pbc[i][neighbor][j] << ",";
+				}
+				*f << "\n";
+			}
+		}
+	}
+
 	void print_neighbors(int max_distance) {
 		std::cout << "Table of Neighbors:\n";
 		std::stringstream ss;
@@ -332,6 +346,14 @@ public:
 		*file_out << "site, x, y, z\n";
 		for (int i = 0; i < N; ++i) {
 			*file_out << i << "," << coordinates[i].x << "," << coordinates[i].y << "," << coordinates[i].z << "\n";
+		}
+	}
+	void write_periodic_translations(std::ofstream* file_out) {
+		*file_out << "site, x, y, z\n";
+		vec3<double> R;
+		for (int i = 1; i < N; ++i) {
+			R = nearest_periodic_translation(0, i);
+			*file_out << i << "," << R.x << "," << R.y << "," << R.z << "\n";
 		}
 	}
 
