@@ -173,7 +173,12 @@ Lattice::Lattice(Lattice_type_t lat_type_in, vec3<int> L_in, vec3<int> pbc_in)
 	timer.flag_end_time("Set Distances");
 
 	timer.flag_start_time("Set Neighbors");
-	set_neighbors_faster();
+	if (lat_type == CGT) {
+		set_neighbors_condensed(4);//need 4 neighbors for CGT model
+	}
+	else {
+		set_neighbors_faster();
+	}
 	timer.flag_end_time("Set Neighbors");
 
 	set_rings();
@@ -433,6 +438,89 @@ void Lattice::set_neighbors_faster() {
 	//		pbc[i].push_back({});
 	//	}
 	//}
+}
+
+void Lattice::set_neighbors_condensed(int max_distance) {
+	//use less memory than the full neighbor list structure
+	double neighbor_distance;
+	vec3<int> lt;//lattice translations
+	int flipx = 1, flipy = 1, flipz = 1;
+	auto distance_it = distances.begin();
+
+	//for ordering
+	struct neighbor_entry {
+		int site, pbc;
+		double angle;
+		double z_coord;
+	};
+	neighbor_entry tempneigh_entry;
+	std::vector<int> tempneighbors, temppbcs;
+	vec3<double> direction;
+	std::vector<neighbor_entry> tempneigh_list;
+
+
+	//set basis site neighbors first
+	for (int i = 0; i < N; ++i) {
+		neighbors.push_back({});
+		pbc.push_back({});
+		
+		//not the most compact logic, but the most readable.  Only keep full neighbor list for site 0
+		if (i == 0) {
+			for (int neighbor_number = 0; neighbor_number < distances.size(); ++neighbor_number) {
+				neighbors[i].push_back({});
+				pbc[i].push_back({});
+			}
+		}
+		else {
+			for (int neighbor_number = 0; neighbor_number < max_distance; ++neighbor_number) {
+				neighbors[i].push_back({});
+				pbc[i].push_back({});
+			}
+		}
+
+		for (int other_site = 0; other_site < N; ++other_site) {
+			if (other_site != i) {
+				neighbor_distance = nearest_periodic_distance(i, other_site, lt);
+				distance_it = std::lower_bound(distances.begin(), distances.end(), neighbor_distance - EPSILON);//should point to the element giving neighbor_distance
+				if (i == 0) {
+					neighbors[i][distance_it - distances.begin()].push_back(other_site);
+					flipx = std::abs(lt.x) == 0 ? 1 : pbc_signs.x;
+					flipy = std::abs(lt.y) == 0 ? 1 : pbc_signs.y;
+					flipz = std::abs(lt.z) == 0 ? 1 : pbc_signs.z;
+					pbc[i][distance_it - distances.begin()].push_back(flipx* flipy* flipz);
+					assert(flipx* flipy* flipz == 1 || flipx * flipy * flipz == -1);
+				}
+				else if (distance_it - distances.begin() < max_distance) {
+					neighbors[i][distance_it - distances.begin()].push_back(other_site);
+					flipx = std::abs(lt.x) == 0 ? 1 : pbc_signs.x;
+					flipy = std::abs(lt.y) == 0 ? 1 : pbc_signs.y;
+					flipz = std::abs(lt.z) == 0 ? 1 : pbc_signs.z;
+					pbc[i][distance_it - distances.begin()].push_back(flipx * flipy * flipz);
+					assert(flipx * flipy * flipz == 1 || flipx * flipy * flipz == -1);
+				}
+			}
+		}
+
+		//ensure proper ordering of neighbors
+		for (int neighbor_number = 0; neighbor_number < neighbors[i].size(); ++neighbor_number) {
+			tempneighbors = neighbors[i][neighbor_number];
+			temppbcs = pbc[i][neighbor_number];
+			tempneigh_list.clear();
+			for (int n = 0; n < tempneighbors.size(); ++n) {
+				direction = nearest_periodic_translation(i, tempneighbors[n]);
+				tempneigh_entry.site = tempneighbors[n];
+				tempneigh_entry.pbc = temppbcs[n];
+				tempneigh_entry.angle = direction.angle_xy();
+				tempneigh_entry.z_coord = direction.z;
+				tempneigh_list.push_back(tempneigh_entry);
+			}
+			std::sort(tempneigh_list.begin(), tempneigh_list.end(), [](auto const& a, auto const& b) { return std::abs(a.angle - b.angle) < EPSILON ? a.z_coord > b.z_coord : a.angle < b.angle; });
+			for (int n = 0; n < neighbors[i][neighbor_number].size(); ++n) {
+				neighbors[i][neighbor_number][n] = tempneigh_list[n].site;
+				pbc[i][neighbor_number][n] = tempneigh_list[n].pbc;
+			}
+		}
+	}
 }
 
 void Lattice::set_coordinates() {
