@@ -25,10 +25,11 @@ class MCResults {
 	std::unordered_map<std::string, std::vector<std::vector<double>>> function_measurements;
 
 	std::unordered_map<std::string, std::vector<std::vector<double>>> function_bins;
+	std::unordered_map<std::string, std::vector<std::vector<double>>> function_sq_bins;
 	std::unordered_map<std::string, std::vector<int>> function_counts;
 
 	bool keep_functions = false;
-	int function_bin_size = 100;
+	int function_bin_size = 1;
 	int measure_bin_size = 100;
 
 public:
@@ -63,6 +64,8 @@ public:
 	std::vector<double> get(std::string obs);
 
 	std::vector<double> get_function_average(std::string obs);
+
+	std::vector<double> get_function_var(std::string obs);
 
 	std::vector<double> autocorrelation(std::vector<double> measurements);
 

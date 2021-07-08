@@ -96,6 +96,13 @@ int main(int argc, char* argv[]) {
         file.open(filename.str());
         file << vec2str(corr);
         file.close();
+
+        std::vector<double> var = runner.get_results().get_function_var("corr");
+        std::stringstream var_file;
+        var_file << "corr_beta" << b << "_var.csv";
+        file.open(var_file.str());
+        file << vec2str(var);
+        file.close();
     }
 
     

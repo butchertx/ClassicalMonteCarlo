@@ -22,4 +22,4 @@ x64/*
 *.slurm
 run/*
 *.o
-./*.csv
+*.csv

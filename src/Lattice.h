@@ -117,6 +117,7 @@ private:
 	double nearest_periodic_distance(int, int);
 	void set_neighbors(int);
 	void set_neighbors_faster();
+	void set_neighbors_condensed(int);
 	void set_coordinates();
 	void set_reciprocal_vectors();
 	void set_distances();
@@ -279,8 +280,10 @@ public:
 		for (int neighbor = 0; neighbor < neighbors[0].size(); ++neighbor) {
 			for (int i = 0; i < N; ++i) {
 				*f << neighbor + 1 << "," << i << ",";
-				for (int j = 0; j < neighbors[i][neighbor].size(); ++j) {
-					*f << neighbors[i][neighbor][j] * pbc[i][neighbor][j] << ",";
+				if (neighbor < neighbors[i].size()) {
+					for (int j = 0; j < neighbors[i][neighbor].size(); ++j) {
+						*f << neighbors[i][neighbor][j] * pbc[i][neighbor][j] << ",";
+					}
 				}
 				*f << "\n";
 			}

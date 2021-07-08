@@ -89,14 +89,17 @@ void MCResults::bin_function(std::string obs) {
 	//get measurements and create zero function to accumulate into
 	std::vector<std::vector<double>> measures = function_measurements[obs];
 	std::vector<double> cumul(measures[0].size(), 0.0);
+	std::vector<double> cumul_sq(measures[0].size(), 0.0);
 
 	for (int meas = 0; meas < measures.size(); ++meas) {
 		for (int i = 0; i < measures[meas].size(); ++i) {
 			cumul[i] += measures[meas][i] / (1.0 * function_bin_size);
+			cumul_sq[i] += (measures[meas][i] * measures[meas][i]) / (1.0 * function_bin_size);
 		}
 	}
 
 	function_bins[obs].push_back(cumul);
+	function_sq_bins[obs].push_back(cumul_sq);
 	function_counts[obs].push_back(function_bin_size);
 }
 
@@ -119,6 +122,26 @@ std::vector<double> MCResults::get_function_average(std::string obs) {
 		}
 	}
 	return function_avg;
+}
+
+std::vector<double> MCResults::get_function_var(std::string obs) {
+	std::vector<std::vector<double>> results;
+	if (keep_functions) {
+		results = function_measurements[obs];
+	}
+	else {
+		results = function_sq_bins[obs];
+	}
+	std::vector<double> function_avg = get_function_average(obs);
+	std::vector<double> function_var(results[0].size(), 0.0);
+
+	for (int i = 0; i < function_var.size(); ++i) {
+		for (int m = 0; m < results.size(); ++m) {
+			function_var[i] += results[m][i] / results.size();
+		}
+		function_var[i] -= function_avg[i] * function_avg[i];
+	}
+	return function_var;
 }
 
 std::vector<double> MCResults::autocorrelation(std::vector<double> measurements_) {
