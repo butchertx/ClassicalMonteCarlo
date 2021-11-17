@@ -21,13 +21,19 @@ public:
 
 	void virtual set_interactions(Lattice& lattice_, cmctype::ModelParams params_) {};
 
+	void reset_interactions(Lattice& lattice_, cmctype::ModelParams params_) {
+		set_interactions(lattice_, params_);
+	}
+
 };
 
 class Model_ANNNXY : public Model {
 
 public:
 
-	Model_ANNNXY(Lattice& lattice_, cmctype::ModelParams params_) : Model(lattice_, params_) {};
+	Model_ANNNXY(Lattice& lattice_, cmctype::ModelParams params_) : Model(lattice_, params_) {
+		set_interactions(lattice_, params_);
+	};
 
 	void set_interactions(Lattice& lattice_, cmctype::ModelParams params_) {
 		assert(lattice_.get_lattice_type() == CUBIC);
@@ -69,7 +75,9 @@ class Model_Heisenberg : public Model {
 
 public:
 
-	Model_Heisenberg(Lattice& lattice_, cmctype::ModelParams params_) : Model(lattice_, params_) {};
+	Model_Heisenberg(Lattice& lattice_, cmctype::ModelParams params_) : Model(lattice_, params_) {
+		set_interactions(lattice_, params_);
+	};
 
 	void set_interactions(Lattice & lattice_, cmctype::ModelParams params_) {
 
@@ -104,7 +112,9 @@ class Model_CGT : public Model {
 
 public:
 
-	Model_CGT(Lattice& lattice_, cmctype::ModelParams params_) : Model(lattice_, params_) {};
+	Model_CGT(Lattice& lattice_, cmctype::ModelParams params_) : Model(lattice_, params_) {
+		set_interactions(lattice_, params_);
+	};
 
 	void set_interactions(Lattice& lattice_, cmctype::ModelParams params_) {
 

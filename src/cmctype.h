@@ -75,6 +75,7 @@ namespace cmctype {
 	struct ParallelParams {
 
 		std::vector<ParallelEntry> parallel_entries;
+		bool parallel_tempering;
 
 	};
 

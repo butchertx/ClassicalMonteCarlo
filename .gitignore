@@ -14,4 +14,11 @@ older/*
 x64/*
 *.tar.gz
 
-*.csv
+# Unix folders/files 
+*.sh 
+*.exe 
+*.x 
+*.slurm 
+run/* 
+*.o 
+*.csv 

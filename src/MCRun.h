@@ -56,9 +56,9 @@ public:
 		return results;
 	}
 
-	void reset_params(cmctype::MCParams params_) {
+	void reset_params(Lattice& lattice_, cmctype::MCParams params_) {
 		params = params_;
-		std::cout << "Update reset_params\n";
+		model->reset_interactions(lattice_, params_.model);
 	}
 
 	void reset_results() {

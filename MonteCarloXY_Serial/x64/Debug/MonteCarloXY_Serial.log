@@ -1,0 +1,63 @@
+﻿  main_xy_serial.cpp
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\MemTimeTester.h(98,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(84,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(166,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(170,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(177,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(186,1): warning C4267: '=': conversion from 'size_t' to '_Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(405,16): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(424,16): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(439,16): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(467,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(472,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\RandomEngine.h(28,68): warning C4244: '=': conversion from '_Rep' to 'unsigned int', possible loss of data
+          with
+          [
+              _Rep=std::chrono::system_clock::rep
+          ]
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\RandomEngine.h(74,20): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\RandomEngine.h(117,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\MCState.h(217,10): warning C4101: 'angle': unreferenced local variable
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\MCState.h(285,10): warning C4101: 'angle': unreferenced local variable
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\MCState.h(168,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\MCState.h(167): message : while compiling class template member function 'int NRotorLattice<spin3>::size(void)'
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Update.h(192): message : see reference to function template instantiation 'int NRotorLattice<spin3>::size(void)' being compiled
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\MCState.h(263): message : see reference to class template instantiation 'NRotorLattice<spin3>' being compiled
+  MCRun.cpp
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\RandomEngine.h(28,68): warning C4244: '=': conversion from '_Rep' to 'unsigned int', possible loss of data
+          with
+          [
+              _Rep=std::chrono::system_clock::rep
+          ]
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\RandomEngine.h(74,20): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\RandomEngine.h(117,1): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\MemTimeTester.h(98,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(84,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(166,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(170,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(177,1): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(186,1): warning C4267: '=': conversion from 'size_t' to '_Ty', possible loss of data
+          with
+          [
+              _Ty=int
+          ]
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(405,16): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(424,16): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(439,16): warning C4244: 'initializing': conversion from '__int64' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(467,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Lattice.h(472,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\MCState.h(217,10): warning C4101: 'angle': unreferenced local variable
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\MCState.h(285,10): warning C4101: 'angle': unreferenced local variable
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\MCState.h(168,1): warning C4267: 'return': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\MCState.h(167): message : while compiling class template member function 'int NRotorLattice<spin3>::size(void)'
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\Update.h(192): message : see reference to function template instantiation 'int NRotorLattice<spin3>::size(void)' being compiled
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\MCState.h(263): message : see reference to class template instantiation 'NRotorLattice<spin3>' being compiled
+  Generating Code...
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\cmctype.h(55): warning C4715: 'cmctype::ModelParams::get_interaction': not all control paths return a value
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\MCRun.h(89): warning C4715: 'MCRun<spin2>::calc_observable': not all control paths return a value
+C:\Users\Matthew\source\repos\ClassicalMonteCarlo\src\MCRun.h(99): warning C4715: 'MCRun<spin2>::calc_observable_function': not all control paths return a value
+  MonteCarloXY_Serial.vcxproj -> C:\Users\Matthew\source\repos\ClassicalMonteCarlo\x64\Debug\MonteCarloXY_Serial.exe

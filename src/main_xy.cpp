@@ -11,7 +11,7 @@ Run a classical Monte Carlo simulation for n-rotor models with arbitrary interac
 #include "MemTimeTester.h"
 #include <thread>
 #include <chrono>
-//#include <mpi.h>
+#include <mpi.h>
 
 //#include "MCParams.h"
 #include "cmctype.h"
@@ -21,6 +21,7 @@ Run a classical Monte Carlo simulation for n-rotor models with arbitrary interac
 #include "MCRun.h"
 #include "MCResults.h"
 #include "Update.h"
+
 
 void check_gpu();
 
@@ -61,29 +62,41 @@ int main(int argc, char* argv[]) {
         }
     */
 
-    //if (mpi_use) {
-    //    //
-    //    //  Initialize MPI.
-    //    //
-    //    MPI_Init(&argc, &argv);
-    //    //
-    //    //  Get the number of processes.
-    //    //
-    //    MPI_Comm_size(MPI_COMM_WORLD, &p);
-    //    //
-    //    //  Get the ID of this process.
-    //    //
-    //    MPI_Comm_rank(MPI_COMM_WORLD, &id);
+    //std::cout << argc << "\n";
+    //for (int i = 0; i < argc; ++i) {
+    //    std::cout << "Arg " << i << ": " << argv[i] << "\n";
+    //}
+    bool mpi_use = false;
+    for (int a = 0; a < argc; ++a) {
+        std::string arg = argv[a];
+        if (arg == "-mpi") {
+            mpi_use = true;
+        }
+    }
+    if (mpi_use) {
+        //
+        //  Initialize MPI.
+        //
+        MPI_Init(&argc, &argv);
+        //
+        //  Get the number of processes.
+        //
+        MPI_Comm_size(MPI_COMM_WORLD, &p);
+        //
+        //  Get the ID of this process.
+        //
+        MPI_Comm_rank(MPI_COMM_WORLD, &id);
 
-    //    if (id == 0) {
-    //        std::cout << "Using MPI with " << p << " processes\n";
-    //    }
-    //}
-    //else {
-    //    p = 1;
-    //    id = 0;
-    //    std::cout << "Not using MPI\n";
-    //}
+        if (id == 0) {
+            std::cout << "Using MPI with " << p << " processes\n";
+        }
+        std::cout << "Process " << id << " online\n";
+    }
+    else {
+        p = 1;
+        id = 0;
+        std::cout << "Not using MPI\n";
+    }
 
     //	if(id == 0){
     //        std::cout << "Using GPU, yes or no: " << (gpu ? "yes" : "no") << "\n";
@@ -97,13 +110,13 @@ int main(int argc, char* argv[]) {
     //  Read and set up params for each process
     //
     cmctype::MCParams params;
-    std::string infile(argv[1]);
+    std::string infile(argv[argc-1]);
     params = cmctype::read_params(infile);
     params.set_parallel_params(id);
     params.print();
     std::vector<double> Jz1, beta;
-    std::vector<std::vector<double>> mag2_results;
-    beta = params.parallel.parallel_entries[0].values;
+    std::vector<double> mag2_results;
+    beta = { params.model.beta };
     Jz1 = params.parallel.parallel_entries[1].values;
 
     //
@@ -121,51 +134,67 @@ int main(int argc, char* argv[]) {
 
     for (int j = 0; j < Jz1.size(); ++j) {
         params.model.interactions[1].strength = Jz1[j];
-        mag2_results.push_back({});
-        for (int b = 0; b < beta.size(); ++b) {
-            params.model.beta = beta[b];
-            params.model.T = 1 / beta[b];
-            runner.reset_params(params);
-            runner.reset_results();
-            state.randomize(&random);
-            runner.run();
+        params.model.T = 1 / params.model.beta;
+        runner.reset_params(lattice, params);
+        runner.reset_results();
+        state.randomize(&random);
+        runner.run();
 
-            std::vector<double> mag2 = runner.get_results().get("m2");
-            std::vector<double> corr = runner.get_results().get_function_average("corr");
-            mag2_results[j].push_back(0.0);
-            for (int i = 0; i < mag2.size(); ++i) {
-                mag2_results[j][b] += mag2[i] / mag2.size();
+        std::vector<double> mag2 = runner.get_results().get("m2");
+        std::vector<double> corr = runner.get_results().get_function_average("corr");
+        mag2_results.push_back(0.0);
+        for (int i = 0; i < mag2.size(); ++i) {
+            mag2_results[j] += mag2[i] / mag2.size();
+        }
+
+        std::ofstream file;
+        std::stringstream filename;
+        filename << "corr_j" << j << "_beta" << id << ".csv";
+        file.open(filename.str());
+        file << vec2str(corr);
+    }
+
+
+    if (mpi_use && (id == 0)) {
+        std::vector<std::vector<double>> mag2_full_results;
+        mag2_full_results.push_back(mag2_results);
+        MPI_Status status;
+        for (int i = 1; i < p; ++i) {
+            //std::cout << "Receiving...#" << i << "\n";
+            MPI_Recv(&mag2_results[0], mag2_results.size(), MPI_DOUBLE, i, 777, MPI_COMM_WORLD, &status);
+            mag2_full_results.push_back(mag2_results);
+        }
+        beta = params.parallel.parallel_entries[0].values;
+        std::cout << beta.size() << "\n";
+        std::cout << mag2_full_results.size() << "\n";
+
+        std::ofstream file;
+        std::stringstream filename;
+        filename << "mag2.csv";
+        file.open(filename.str());
+        file << "beta\\Jz1," << vec2str(Jz1) << "\n";
+        for (int b = 0; b < mag2_full_results.size(); ++b) {
+            file << beta[b] << ",";
+            for (int j = 0; j < Jz1.size() - 1; ++j) {
+                file << mag2_full_results[b][j] << ",";
             }
-
-            std::ofstream file;
-            std::stringstream filename;
-            filename << "corr_j" << j << "_beta" << b << ".csv";
-            file.open(filename.str());
-            file << vec2str(corr);
+            file << mag2_full_results[b][Jz1.size() - 1] << "\n";
         }
-    }
 
-    std::ofstream file;
-    file.open("mag2.csv");
-    file << "beta\\Jz1," << vec2str(Jz1) << "\n";
-    for (int b = 0; b < beta.size(); ++b) {
-        file << beta[b] << ",";
-        for (int j = 0; j < Jz1.size()-1; ++j) {
-            file << mag2_results[j][b] << ",";
-        }
-        file << mag2_results[Jz1.size() - 1][b] << "\n";
+        timer.flag_end_time("full simulation");
+        timer.print_timers();
     }
- 
-
-    timer.flag_end_time("full simulation");
-    timer.print_timers();
+    else if (mpi_use) {
+        //std::cout << "Sending...\n";
+        MPI_Send(&mag2_results[0], mag2_results.size(), MPI_DOUBLE, 0, 777, MPI_COMM_WORLD);
+    }
 
     ////
     ////  End the MPI process
     ////
-    //if (mpi_use) {
-    //    MPI_Finalize();
-    //}
+    if (mpi_use) {
+        MPI_Finalize();
+    }
 
     return 0;
 }
