@@ -35,6 +35,10 @@ void cmctype::MCParams::print(){
 	std::cout << "Model Params\n";
 	std::cout << "Model: " << model.model_name << "\n";
 	std::cout << "Interactions:\n";
+	for (auto interaction : model.interactions) {
+		std::cout << interaction.name << " = " << interaction.strength << "\n";
+	}
+	std::cout << "Beta: " << model.beta << "\n";
 }
 
 void cmctype::to_json(json& j, const cmctype::LatticeParams& p) {
@@ -102,6 +106,7 @@ void cmctype::to_json(json& j, const cmctype::ParallelParams& p) {
 
 void cmctype::from_json(const json& j, cmctype::ParallelParams& p) {
 	j.at("parallel_entries").get_to<std::vector<cmctype::ParallelEntry>>(p.parallel_entries);
+	j.at("parallel_tempering").get_to<bool>(p.parallel_tempering);
 }
 
 void cmctype::to_json(json& j, const cmctype::MarkovParams& p) {
@@ -127,5 +132,12 @@ void cmctype::from_json(const json& j, cmctype::MarkovParams& p) {
 }
 
 void cmctype::MCParams::set_parallel_params(int id) {
-	std::cout << "Parallel params not implemented yet\n";
+	// set the parameters based on id and the list of parallel params
+	assert(parallel.parallel_entries[0].name.compare("beta") == 0);
+	assert(id < parallel.parallel_entries[0].values.size());
+	std::cout << "Parallel params only implemented for beta/parallel tempering\n";
+
+	if (parallel.parallel_entries[0].name.compare("beta") == 0) {
+		model.beta = parallel.parallel_entries[0].values[id];
+	}
 }

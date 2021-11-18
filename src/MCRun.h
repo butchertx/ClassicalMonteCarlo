@@ -56,9 +56,9 @@ public:
 		return results;
 	}
 
-	void reset_params(cmctype::MCParams params_) {
+	void reset_params(Lattice& lattice_, cmctype::MCParams params_) {
 		params = params_;
-		std::cout << "Update reset_params\n";
+		model->reset_interactions(lattice_, params_.model);
 	}
 
 	void reset_results() {
@@ -78,6 +78,12 @@ public:
 	double calc_observable(std::string obs_name) {
 		if (obs_name.compare("m2") == 0) {
 			return state->calc_mag2();
+		}
+		else if (obs_name.compare("|m|") == 0) {
+			return state->calc_mag_abs();
+		}
+		else if (obs_name.compare("m") == 0) {
+			return state->calc_mag();
 		}
 		else if (obs_name.compare("mq") == 0) {
 			return state->calc_chi_q(model->Q);
