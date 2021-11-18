@@ -51,7 +51,8 @@ namespace cmctype {
 					return i.strength;
 				}
 			}
-			std::cout << "No valid interaction found for interaction name: " << interaction_name << "\n";
+			return 0.0;
+			std::cout << "No valid interaction found for interaction name: " << interaction_name << "; Using 0.0\n";
 		}
 
 	};

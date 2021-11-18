@@ -13,6 +13,7 @@ public:
 	//index 1: coupling strength
 	std::vector<double> neighbor_couplings;
 
+	double hfield = 0.0;
 	vec3<double> Q = { 0.0, 0.0, 0.0 };
 
 	Model(Lattice& lattice_, cmctype::ModelParams params_) {
@@ -38,6 +39,8 @@ public:
 	void set_interactions(Lattice& lattice_, cmctype::ModelParams params_) {
 		assert(lattice_.get_lattice_type() == CUBIC);
 		assert(params_.model_name.compare("ANNNXY") == 0);
+
+		hfield = params_.beta * params_.get_interaction("h");
 
 		std::vector<vec3<double>> displacements = { vec3<double>(-1.0, 0.0, 0.0),
 														vec3<double>(1.0, 0.0, 0.0),

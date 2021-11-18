@@ -179,6 +179,10 @@ public:
 
 	virtual void randomize(RandomEngine* rand_p) = 0;
 
+	virtual double calc_mag() = 0;
+
+	virtual double calc_mag_abs() = 0;
+
 	virtual double calc_mag2() = 0;
 
 	virtual double calc_chi_q(vec3<double> Q) = 0;
@@ -222,6 +226,24 @@ public:
 			R.site = site;
 			spins[site] = R;
 		}
+	}
+
+	double calc_mag() {
+		vec2<double> result(0.0, 0.0);
+		for (int i = 0; i < spins.size(); ++i) {
+			result.x += spins[i].s.x;
+			result.y += spins[i].s.y;
+		}
+		return result.x * (1.0 / N);
+	}
+
+	double calc_mag_abs() {
+		vec2<double> result(0.0, 0.0);
+		for (int i = 0; i < spins.size(); ++i) {
+			result.x += spins[i].s.x;
+			result.y += spins[i].s.y;
+		}
+		return sqrt((result * result)) / ((double)N);
 	}
 
 	double calc_mag2() {

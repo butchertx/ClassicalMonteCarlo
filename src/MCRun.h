@@ -79,6 +79,12 @@ public:
 		if (obs_name.compare("m2") == 0) {
 			return state->calc_mag2();
 		}
+		else if (obs_name.compare("|m|") == 0) {
+			return state->calc_mag_abs();
+		}
+		else if (obs_name.compare("m") == 0) {
+			return state->calc_mag();
+		}
 		else if (obs_name.compare("mq") == 0) {
 			return state->calc_chi_q(model->Q);
 		}

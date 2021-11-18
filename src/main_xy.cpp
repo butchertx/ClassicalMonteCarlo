@@ -25,6 +25,7 @@ Run a classical Monte Carlo simulation for n-rotor models with arbitrary interac
 
 void check_gpu();
 
+void write_results_mpi(int id, int p, cmctype::MCParams params, std::vector<double> process_results, std::string filename);
 
 int main(int argc, char* argv[]) {
     //
@@ -115,8 +116,7 @@ int main(int argc, char* argv[]) {
     params.set_parallel_params(id);
     params.print();
     std::vector<double> Jz1, beta;
-    std::vector<double> mag2_results;
-    beta = { params.model.beta };
+    std::vector<double> mag2_results, mag_results, mag_abs_results;
     Jz1 = params.parallel.parallel_entries[1].values;
 
     //
@@ -133,7 +133,12 @@ int main(int argc, char* argv[]) {
     MCRun<spin2> runner(&random, params, &state, &model, &updater);
 
     for (int j = 0; j < Jz1.size(); ++j) {
-        params.model.interactions[1].strength = Jz1[j];
+        if (params.parallel.parallel_entries[1].name == "Jz1") {
+            params.model.interactions[1].strength = Jz1[j];
+        }
+        else {
+            params.model.interactions[3].strength = Jz1[j];
+        }
         params.model.T = 1 / params.model.beta;
         runner.reset_params(lattice, params);
         runner.reset_results();
@@ -141,53 +146,40 @@ int main(int argc, char* argv[]) {
         runner.run();
 
         std::vector<double> mag2 = runner.get_results().get("m2");
+        std::vector<double> mag = runner.get_results().get("m");
+        std::vector<double> mag_abs = runner.get_results().get("|m|");
         std::vector<double> corr = runner.get_results().get_function_average("corr");
         mag2_results.push_back(0.0);
+        mag_results.push_back(0.0);
+        mag_abs_results.push_back(0.0);
         for (int i = 0; i < mag2.size(); ++i) {
             mag2_results[j] += mag2[i] / mag2.size();
+            mag_results[j] += mag[i] / mag.size();
+            mag_abs_results[j] += mag_abs[i] / mag_abs.size();
         }
 
         std::ofstream file;
         std::stringstream filename;
-        filename << "corr_j" << j << "_beta" << id << ".csv";
+        if (params.parallel.parallel_entries[1].name == "Jz1") {
+            filename << "corr_j" << j << "_beta" << id << ".csv";
+        }
+        else {
+            filename << "corr_h" << j << "_beta" << id << ".csv";
+        }
         file.open(filename.str());
         file << vec2str(corr);
     }
 
-
-    if (mpi_use && (id == 0)) {
-        std::vector<std::vector<double>> mag2_full_results;
-        mag2_full_results.push_back(mag2_results);
-        MPI_Status status;
-        for (int i = 1; i < p; ++i) {
-            //std::cout << "Receiving...#" << i << "\n";
-            MPI_Recv(&mag2_results[0], mag2_results.size(), MPI_DOUBLE, i, 777, MPI_COMM_WORLD, &status);
-            mag2_full_results.push_back(mag2_results);
-        }
-        beta = params.parallel.parallel_entries[0].values;
-        std::cout << beta.size() << "\n";
-        std::cout << mag2_full_results.size() << "\n";
-
-        std::ofstream file;
-        std::stringstream filename;
-        filename << "mag2.csv";
-        file.open(filename.str());
-        file << "beta\\Jz1," << vec2str(Jz1) << "\n";
-        for (int b = 0; b < mag2_full_results.size(); ++b) {
-            file << beta[b] << ",";
-            for (int j = 0; j < Jz1.size() - 1; ++j) {
-                file << mag2_full_results[b][j] << ",";
-            }
-            file << mag2_full_results[b][Jz1.size() - 1] << "\n";
-        }
-
-        timer.flag_end_time("full simulation");
-        timer.print_timers();
+    if (mpi_use) {
+        write_results_mpi(id, p, params, mag2_results, "mag2.csv");
+        write_results_mpi(id, p, params, mag_results, "mag.csv");
+        write_results_mpi(id, p, params, mag_abs_results, "mag_abs.csv");
     }
-    else if (mpi_use) {
-        //std::cout << "Sending...\n";
-        MPI_Send(&mag2_results[0], mag2_results.size(), MPI_DOUBLE, 0, 777, MPI_COMM_WORLD);
-    }
+
+
+    timer.flag_end_time("full simulation");
+    timer.print_timers();
+    
 
     ////
     ////  End the MPI process
@@ -197,6 +189,43 @@ int main(int argc, char* argv[]) {
     }
 
     return 0;
+}
+
+void write_results_mpi(int id, int p, cmctype::MCParams params, std::vector<double> process_results, std::string filename) {
+    if (id == 0) {
+        std::vector<std::vector<double>> full_results;
+        full_results.push_back(process_results);
+        MPI_Status status;
+        for (int i = 1; i < p; ++i) {
+            //std::cout << "Receiving...#" << i << "\n";
+            MPI_Recv(&process_results[0], process_results.size(), MPI_DOUBLE, i, 777, MPI_COMM_WORLD, &status);
+            full_results.push_back(process_results);
+        }
+        std::vector<double> beta = params.parallel.parallel_entries[0].values;
+        std::vector<double> other = params.parallel.parallel_entries[1].values;
+
+        std::ofstream file;
+        file.open(filename);
+
+        if (params.parallel.parallel_entries[1].name == "Jz1") {
+            file << "beta\\Jz1," << vec2str(other) << "\n";
+        }
+        else {
+            file << "beta\\h," << vec2str(other) << "\n";
+        }
+
+        for (int b = 0; b < full_results.size(); ++b) {
+            file << beta[b] << ",";
+            for (int j = 0; j < other.size() - 1; ++j) {
+                file << full_results[b][j] << ",";
+            }
+            file << full_results[b][other.size() - 1] << "\n";
+        }
+    }
+    else {
+        //std::cout << "Sending...\n";
+        MPI_Send(&process_results[0], process_results.size(), MPI_DOUBLE, 0, 777, MPI_COMM_WORLD);
+    }
 }
 
 void check_gpu() {

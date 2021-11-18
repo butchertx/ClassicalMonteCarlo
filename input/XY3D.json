@@ -19,6 +19,10 @@
       {
         "name": "Jz2",
         "strength": 0.0
+      },
+      {
+        "name": "h",
+        "strength":  0.0
       }
     ],
     "beta": 1.0
@@ -27,12 +31,12 @@
     "parallel_entries": [
       {
         "name": "beta",
-        "values": [ 1.0, 2.0 ],
+        "values": [ 0.5, 0.7 ],
         "MPI": false
       },
       {
-        "name": "Jz1",
-        "values": [ -1.0, -2.0 ],
+        "name": "h",
+        "values": [ 0.0, 0.1, 0.3, 0.5 ],
         "MPI": false
       }
     ],
@@ -47,7 +51,7 @@
     "throwaway": 1000,
     "measures_per_ptemp": 10000
   },
-  "observables": [ "m2", "mq" ],
+  "observables": [ "m2", "|m|", "m", "mq" ],
   "observable_functions": [ "corr" ],
   "outputs": [ "average" ]
 }

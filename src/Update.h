@@ -51,7 +51,7 @@ public:
 		}
 
 		//accept or reject
-		if (random->get_rand_prob() < exp(action)) {
+		if (random->get_rand_prob() < exp(action - 2.0 * model->hfield * seedR * R.x)) {//second term is from magnetic field in x direction
 			state->set(site0, seed - (R*(2.0 * seedR)));
 			return true;
 		}
@@ -62,7 +62,7 @@ public:
 
 	void overrelaxation_step(NRotorLattice<spin2>* state) {
 
-		spin2 mean_field(0.0, 0.0);
+		spin2 mean_field(model->hfield, 0.0);
 		spin2 neigh, seed;
 		double s_dot_mf;
 		int site0 = random->get_rand_site();
@@ -90,6 +90,7 @@ public:
 		buffer.push_back(random->get_rand_site());
 		double angle = random->get_rand_prob() * TAU;
 		cmctype::vec2<double> R(cos(angle), sin(angle));
+		double field_action = 0.0; // accumulate the action of the field on flipping the cluster
 		
 		int site0 = buffer.back();
 		cluster[site0] = true;
@@ -111,16 +112,20 @@ public:
 						buffer.push_back(neigh.site);
 						flip_list.push_back(neigh.site);
 						cluster[neigh.site] = true;
+						field_action += 2.0 * neigh.dot(R) * R.x;
 					}
 				}
 			}
 		}
 
-		for (int i = 0; i < flip_list.size(); ++i) {
-			seed = state->get(flip_list[i]);
-			seedR = seed * R;
-			state->set(flip_list[i], seed - R * (2.0 * seedR));
-		}
+		//accept or reject
+		if (random->get_rand_prob() < exp(-field_action)) {//accept if cluster does not go too much against the applied field
+			for (int i = 0; i < flip_list.size(); ++i) {
+				seed = state->get(flip_list[i]);
+				seedR = seed * R;
+				state->set(flip_list[i], seed - R * (2.0 * seedR));
+			}
+		}		
 
 
 	};
