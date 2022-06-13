@@ -41,6 +41,31 @@ public:
 		assert(params_.model_name.compare("ANNNXY") == 0);
 
 		hfield = params_.beta * params_.get_interaction("h");
+		if (params_.get_interaction("Jz2") <= 0) {
+			if (params_.get_interaction("Jz1") > 0) {
+				Q = { 0.0, 0.0, M_PI };
+			}
+		}
+		else {
+			double ratio = -params_.get_interaction("Jz1") / (4 * params_.get_interaction("Jz2"));
+			if (ratio < -1) {
+				Q = { 0.0, 0.0, M_PI };
+			}
+			else if (ratio > 1) {
+				Q = { 0.0, 0.0, 0.0 };
+			}
+			else {
+				Q = { 0.0, 0.0, acos(ratio) };
+			}
+		}
+		if (params_.get_interaction("Jz1") >= 0) {
+			if (params_.get_interaction("Jz1") >= 3 * params_.get_interaction("Jz2")) {
+				Q = { 0.0, 0.0, M_PI };
+			}
+			else {
+				Q = { 0.0, 0.0, 0.5*M_PI };
+			}
+		}
 
 		std::vector<vec3<double>> displacements = { vec3<double>(-1.0, 0.0, 0.0),
 														vec3<double>(1.0, 0.0, 0.0),
